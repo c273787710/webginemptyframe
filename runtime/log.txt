@@ -1,0 +1,2 @@
+{"level":"INFO","time":"2020-06-11T17:31:13.789+0800","caller":"middleware/log.go:17","msg":"/v1/admin/auth","path":"/v1/admin/auth","query":"","method":"GET","ip":"::1","status":200,"errors":"","cost":0}
+{"level":"INFO","time":"2020-06-11T18:19:50.525+0800","caller":"middleware/log.go:17","msg":"/v1/admin/auth","path":"/v1/admin/auth","query":"","method":"GET","ip":"::1","status":200,"errors":"","cost":0}
