@@ -16,6 +16,9 @@ const (
 
 	// ### 无效传参
 	INVALID_REQUEST_PARAMS = 1000
+	INVALID_AUTH_NAME = 1001
+	ADMIN_LOCKING = 1002
+	ADMIN_AUTH_ERR = 1003
 )
 var msgFlags = map[int]string{
 	SUCCESS: "操作成功",
@@ -23,6 +26,9 @@ var msgFlags = map[int]string{
 	INVALID_AUTH_TOKEN: "无效登录凭证",
 	INVALID_PERMISSION_OPERATE: "无权操作",
 	INVALID_REQUEST_PARAMS: "参数传递错误",
+	INVALID_AUTH_NAME: "用户名错误",
+	ADMIN_LOCKING: "用户被锁定",
+	ADMIN_AUTH_ERR: "用户登录失败",
 }
 
 func getMsg(code int)string{

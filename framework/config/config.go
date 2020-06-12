@@ -15,11 +15,21 @@ type Server struct {
 }
 var ServerSetting = &Server{}
 
-//#####app相关配置
+//##### app相关配置
 type App struct {
 	RuntimeRootPath string
+	LoginFailureLock int
+	LoginFailureTime int
 }
 var AppSetting = &App{}
+
+// ##### jwt相关配置
+type JWT struct {
+	ExpireTime time.Duration
+	Issuer string
+	Secret string
+}
+var JWTSetting = &JWT{}
 
 //#####日志系统配置
 type Log struct {
@@ -58,10 +68,12 @@ func InitConfig(){
 	getSection("app",AppSetting)
 	getSection("log",LogSetting)
 	getSection("mysql",MysqlSetting)
+	getSection("jwt",JWTSetting)
 
 	ServerSetting.WriteTimeout = ServerSetting.WriteTimeout * time.Second
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	LogSetting.FileName = AppSetting.RuntimeRootPath + LogSetting.FileName
+	JWTSetting.ExpireTime = JWTSetting.ExpireTime * time.Hour
 }
 
 func getSection(section string,v interface{}){
