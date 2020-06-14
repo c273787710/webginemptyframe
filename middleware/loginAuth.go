@@ -3,6 +3,8 @@ package middleware
 import (
 	"adminframe/utils"
 	"github.com/gin-gonic/gin"
+	"adminframe/application/model"
+	"adminframe/framework/config"
 )
 
 // #### jwt登录鉴权
@@ -10,23 +12,36 @@ import (
 func JWTMiddleware()gin.HandlerFunc{
 	return func(c *gin.Context) {
 		token := c.Request.Header.Get("Authorization")
-		token_valid := true
+		object := utils.NewObject(c)
 		if token == "" {
-			token_valid = false
-		}
-		info,err := utils.ParseJWTToken(token)
-		if err != nil {
-			token_valid = false
-		}
-		if c.ClientIP() != info.ClientIP {
-			token_valid = false
-		}
-		if !token_valid {
-			object := utils.Object{C:c}
 			object.Response(utils.INVALID_AUTH_TOKEN,nil,"")
 			c.Abort()
 			return
 		}
+		info,err := utils.ParseJWTToken(token)
+		if err != nil {
+			object.Response(utils.INVALID_AUTH_TOKEN,nil,"")
+			c.Abort()
+			return
+		}
+		if config.AppSetting.AgentAuth == 1 && c.ClientIP() != info.ClientIP {
+			object.Response(utils.INVALID_AUTH_TOKEN,nil,"")
+			c.Abort()
+			return
+		}
+
+		model,err := model.FindAdminByCondition(map[string]interface{}{"id =":info.ID})
+		if err != nil || model == nil {
+			object.Response(utils.INVALID_AUTH_TOKEN,nil,"")
+			c.Abort()
+			return
+		}
+		if model.Username != info.Username {
+			object.Response(utils.INVALID_AUTH_TOKEN,nil,"")
+			c.Abort()
+			return
+		}
+		c.Set("uid",info.ID)
 		c.Next()
 	}
 }

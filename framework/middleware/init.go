@@ -12,5 +12,5 @@ func InitMiddleWare(e *gin.Engine){
 	//日志记录中间件
 	e.Use(logMiddleWare(logger))
 	//异常恢复中间件
-	e.Use(recoveryMiddleware(logger))
+	//e.Use(recoveryMiddleware(logger))
 }

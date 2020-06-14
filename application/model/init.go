@@ -6,6 +6,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"strings"
+	"time"
 )
 var DB *gorm.DB
 func InitModel(){
@@ -16,6 +17,7 @@ func InitModel(){
 	}
 	DB.DB().SetMaxOpenConns(config.MysqlSetting.MaxOpenConn)
 	DB.DB().SetMaxIdleConns(config.MysqlSetting.MaxIdleConn)
+	DB.DB().SetConnMaxLifetime(time.Hour)
 }
 
 func dns()string{

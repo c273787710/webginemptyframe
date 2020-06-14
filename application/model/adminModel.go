@@ -17,7 +17,7 @@ type AdminModel struct {
 	LastIP string `gorm:"column:last_ip" json:"last_ip"`
 	IsSup int8 `gorm:"column:is_sup" json:"is_sup"`
 	RoleID int `gorm:"column:role_id" json:"role_id"`
-	LoginFailure int8 `gorm:"column:loginfailure" json:"login_failure"`
+	LoginFailure int8 `gorm:"column:loginfailure" json:"-"`
 	LoginTime int `gorm:"column:logintime" json:"login_time"`
 	CreateTime int `gorm:"column:create_time" json:"create_time"`
 	UpdateTime int `gorm:"column:update_time" json:"update_time"`

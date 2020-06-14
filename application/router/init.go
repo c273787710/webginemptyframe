@@ -12,6 +12,8 @@ func register(r func(e *gin.Engine)){
 
 func InitRouter(r *gin.Engine){
 	register(authRouter)
+	register(ruleRouter)
+	register(roleRouter)
 	for _,router := range routers{
 		router(r)
 	}

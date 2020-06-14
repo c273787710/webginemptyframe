@@ -20,6 +20,7 @@ type App struct {
 	RuntimeRootPath string
 	LoginFailureLock int
 	LoginFailureTime int
+	AgentAuth int
 }
 var AppSetting = &App{}
 

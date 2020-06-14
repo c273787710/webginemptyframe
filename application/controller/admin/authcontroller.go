@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"time"
+	"strings"
 )
 type adminParam struct {
 	Username string `json:"username" binding:"required,min=5,max=30"`
@@ -15,7 +16,7 @@ type adminParam struct {
 
 // #### 登录鉴权
 func LoginAuth(c *gin.Context){
-	object := utils.Object{C:c}
+	object := utils.NewObject(c)
 	var loginParam = new(adminParam)
 	err := c.BindJSON(loginParam)
 	if err != nil {
@@ -67,5 +68,26 @@ func LoginAuth(c *gin.Context){
 
 // #### 获取用户信息
 func AdminInfo(c *gin.Context){
-
+	uid,_ := c.Get("uid")
+	object := utils.NewObject(c)
+	adminmodel,err := model.FindAdminByCondition(map[string]interface{}{"id":uid})
+	if err != nil || adminmodel == nil {
+		object.Response(utils.INVALID_REQUEST_PARAMS,nil,"")
+		c.Abort()
+		return
+	}
+	rulenames := []string{}
+	if adminmodel.IsSup == 0 {
+		rolemodel,_ := model.FindRoleByCondition(map[string]interface{}{"id":adminmodel.RoleID})
+		if rolemodel != nil {
+			rules,_ := model.SelectRulesByCondition(map[string]interface{}{"id in":strings.Split(rolemodel.RuleIds,";")})
+			for _,v := range rules {
+				rulenames = append(rulenames,v.RuleName)
+			}
+		}
+	}
+	object.Response(utils.SUCCESS,gin.H{
+		"userinfo" : adminmodel,
+		"rules":rulenames,
+	},"")
 }

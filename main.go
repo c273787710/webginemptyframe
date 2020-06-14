@@ -6,6 +6,7 @@ import (
 	"adminframe/framework/config"
 	"fmt"
 	"net/http"
+	"adminframe/validator"
 )
 
 func init(){
@@ -13,6 +14,8 @@ func init(){
 	config.InitConfig()
 	// #### 初始化数据库连接
 	model.InitModel()
+	// #### 注册自己的验证器
+	validator.InitSelfValidator()
 }
 
 func main(){
