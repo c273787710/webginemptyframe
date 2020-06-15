@@ -17,6 +17,7 @@ type RoleModel struct {
 }
 
 type RoleParam struct {
+	ID int `json:"id"`
 	RoleName string `json:"role_name" binding:"required,max=30"`
 	RuleIds []int `json:"rule_ids" binding:"required,ruleidsisvalid"`
 	Pid int `json:"pid" binding:"max=1,roleidisvalid"`

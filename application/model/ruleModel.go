@@ -18,6 +18,7 @@ type RuleModel struct {
 }
 
 type RuleParam struct {
+	ID int `json:"id"`
 	RuleName string `json:"rule_name" binding:"required,max=30"`
 	RulePath string `json:"rule_path" binding:"required,max=50"`
 	Method string `json:"method" binding:"rulemethodvalidate"`

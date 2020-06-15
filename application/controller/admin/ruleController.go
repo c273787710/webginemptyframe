@@ -36,19 +36,7 @@ func AddRule(c *gin.Context){
 }
 
 func UpdateRule(c *gin.Context){
-	id,_ := strconv.Atoi(c.Query("id"))
 	object := utils.NewObject(c)
-	if id == 0 {
-		object.Response(utils.INVALID_REQUEST_PARAMS,nil,"规则ID错误")
-		c.Abort()
-		return
-	}
-	rule,_ := model.FindRuleByCondition(map[string]interface{}{"id":id})
-	if rule == nil{
-		object.Response(utils.RECORD_NOT_EXIT,nil,"")
-		c.Abort()
-		return
-	}
 	param := new(model.RuleParam)
 	err := c.BindJSON(param)
 	if err != nil {
@@ -56,8 +44,19 @@ func UpdateRule(c *gin.Context){
 		c.Abort()
 		return
 	}
+	if param.ID == 0 || param.ID == param.Pid {
+		object.Response(utils.INVALID_REQUEST_PARAMS,nil,"规则ID错误")
+		c.Abort()
+		return
+	}
+	rule,_ := model.FindRuleByCondition(map[string]interface{}{"id":param.ID})
+	if rule == nil{
+		object.Response(utils.RECORD_NOT_EXIT,nil,"")
+		c.Abort()
+		return
+	}
 	//判断rulename是否存在
-	exit,_ := model.FindRuleByCondition(map[string]interface{}{"id !=":id,"rule_name":param.RuleName})
+	exit,_ := model.FindRuleByCondition(map[string]interface{}{"id !=":param.ID,"rule_name":param.RuleName})
 	if exit != nil {
 		object.Response(utils.RECORD_IS_EXIT,nil,"rule_name已存在")
 		c.Abort()

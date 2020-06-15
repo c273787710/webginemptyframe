@@ -33,7 +33,6 @@ func AddRole(c *gin.Context){
 
 func UpdateRole(c *gin.Context){
 	object := utils.NewObject(c)
-	id,_ := strconv.Atoi(c.Query("id"))
 	param := new(model.RoleParam)
 	err := c.BindJSON(param)
 	if err != nil {
@@ -41,12 +40,14 @@ func UpdateRole(c *gin.Context){
 		c.Abort()
 		return
 	}
-	if id == 0 || id == param.Pid {
+	//判断id是否正确
+	if param.ID == 0 || param.ID == param.Pid {
 		object.Response(utils.INVALID_REQUEST_PARAMS,nil,"")
 		c.Abort()
 		return
 	}
-	role,err := model.FindRoleByCondition(map[string]interface{}{"id":id})
+	//判断需要更新的是否存在
+	role,err := model.FindRoleByCondition(map[string]interface{}{"id":param.ID})
 	if err != nil || role == nil {
 		object.Response(utils.RECORD_NOT_EXIT,nil,"")
 		c.Abort()

@@ -1,8 +1,8 @@
 package validator
 
 import (
-	"github.com/go-playground/validator/v10"
 	"adminframe/application/model"
+	"github.com/go-playground/validator/v10"
 )
 
 func roleidisvalid(field validator.FieldLevel)bool{

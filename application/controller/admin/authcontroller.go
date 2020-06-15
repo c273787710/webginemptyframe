@@ -61,13 +61,16 @@ func LoginAuth(c *gin.Context){
 		c.Abort()
 		return
 	}
-	object.Response(utils.SUCCESS,gin.H{"token":token},"")
+	object.Response(utils.SUCCESS,gin.H{
+		"token":token,
+		"user":admin,
+	},"")
 	c.Abort()
 	return
 }
 
 // #### 获取用户信息
-func AdminInfo(c *gin.Context){
+func AdminMenu(c *gin.Context){
 	uid,_ := c.Get("uid")
 	object := utils.NewObject(c)
 	adminmodel,err := model.FindAdminByCondition(map[string]interface{}{"id":uid})
