@@ -21,14 +21,14 @@ func LoginAuth(c *gin.Context){
 	err := c.BindJSON(loginParam)
 	if err != nil {
 		//参数传递错误
-		object.Response(utils.INVALID_REQUEST_PARAMS,nil,err.Error())
+		object.Response(utils.INVALID_REQUEST_PARAMS,nil,"用户名和密码错误")
 		c.Abort()
 		return
 	}
 	//判断用户名是否正确，并且判断是否超出登录错误次数
 	admin,err := model.FindAdminByCondition(map[string]interface{}{"username":loginParam.Username})
 	if err != nil {
-		object.Response(utils.INVALID_AUTH_NAME,nil,err.Error())
+		object.Response(utils.INVALID_AUTH_NAME,nil,"用户名不存在")
 		c.Abort()
 		return
 	}
@@ -79,15 +79,13 @@ func AdminMenu(c *gin.Context){
 		c.Abort()
 		return
 	}
-	rulenames := []string{}
+	var rulenames []string
 	if adminmodel.IsSup == 0 {
 		rolemodel,_ := model.FindRoleByCondition(map[string]interface{}{"id":adminmodel.RoleID})
-		if rolemodel != nil {
-			rules,_ := model.SelectRulesByCondition(map[string]interface{}{"id in":strings.Split(rolemodel.RuleIds,";")})
-			for _,v := range rules {
-				rulenames = append(rulenames,v.RuleName)
-			}
+		query := map[string]interface{}{
+			"id in":strings.Split(rolemodel.RuleIds,";"),
 		}
+		rulenames,err = model.GetRuleNameByRuleIDS(query)
 	}
 	object.Response(utils.SUCCESS,gin.H{
 		"userinfo" : adminmodel,

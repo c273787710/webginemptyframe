@@ -1,12 +1,30 @@
 package admin
 
 import (
-	"github.com/gin-gonic/gin"
-	"adminframe/utils"
 	"adminframe/application/model"
+	"adminframe/utils"
+	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
+type pidRuleList struct {
+	ID int `json:"id"`
+	Title string `json:"title"`
+}
+func GetPidRule(c *gin.Context){
+	result := []pidRuleList{}
+	query := map[string]interface{}{
+		"pid":0,
+	}
+	object := utils.NewObject(c)
+	err := model.GetFieldsFromTable("rule",query,"id,title",&result)
+	if err != nil {
+		object.Response(utils.SELECT_RECORD_ERR,nil,"")
+		c.Abort()
+		return
+	}
+	object.Response(utils.SUCCESS,result,"")
+}
 
 func AddRule(c *gin.Context){
 	param := new(model.RuleParam)
@@ -89,4 +107,19 @@ func DelRule(c *gin.Context){
 	object.Response(utils.SUCCESS,nil,"")
 }
 
-func ListRule(c *gin.Context){}
+func ListRule(c *gin.Context){
+	object := utils.NewObject(c)
+	query := new(model.RuleQueryParam)
+	_ = c.ShouldBindQuery(query)
+	list,count,err := model.GetRuleListAndCount(query)
+	if err != nil {
+		object.Response(utils.SELECT_RECORD_ERR,nil,"")
+		c.Abort()
+		return
+	}
+	object.Response(utils.SUCCESS,gin.H{
+		"list": list,
+		"count":count,
+	},"")
+}
+

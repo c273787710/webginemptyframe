@@ -7,7 +7,7 @@ import (
 
 // ##### 状态常量
 const (
-	SUCCESS = 200
+	SUCCESS = 0
 	ERROR = 500
 	// ### 无效登录凭证
 	INVALID_AUTH_TOKEN = 5000
@@ -22,6 +22,7 @@ const (
 	CREATE_RECORD_ERR = 1004
 	UPDATE_RECORD_ERR = 1005
 	DELETE_RECORD_ERR = 1006
+	SELECT_RECORD_ERR = 1007
 
 	ADMIN_LOCKING = 2002
 	ADMIN_AUTH_ERR = 2003
@@ -42,6 +43,7 @@ var msgFlags = map[int]string{
 	CREATE_RECORD_ERR:"创建记录失败",
 	UPDATE_RECORD_ERR: "更新记录失败",
 	DELETE_RECORD_ERR: "删除记录失败",
+	SELECT_RECORD_ERR: "获取记录列表失败",
 }
 
 func getMsg(code int)string{

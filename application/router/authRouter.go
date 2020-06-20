@@ -14,6 +14,6 @@ func authRouter(e *gin.Engine){
 	g := e.Group("/v1/admin")
 	g.Use(middleware.JWTMiddleware())
 	{
-		g.GET("/getMenu",admin.AdminMenu)
+		g.GET("/getInfo",admin.AdminMenu)
 	}
 }

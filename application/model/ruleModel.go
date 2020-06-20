@@ -1,7 +1,6 @@
 package model
 
 import (
-	"adminframe/framework/config"
 	"time"
 )
 
@@ -15,6 +14,7 @@ type RuleModel struct {
 	Auth int8 `gorm:"column:auth" json:"auth"`
 	CreateTime int `gorm:"column:create_time" json:"create_time"`
 	UpdateTime int `gorm:"column:update_time" json:"update_time"`
+	Parent string `gorm:"-" json:"parent"`
 }
 
 type RuleParam struct {
@@ -29,16 +29,17 @@ type RuleParam struct {
 
 
 func (r RuleModel)TableName()string{
-	return config.MysqlSetting.Prefix + "rule"
+	return getTableName("rule")
 }
 
+//查询一条
 func FindRuleByCondition(condition map[string]interface{})(*RuleModel,error)  {
 	whereSql,values,err := buildQuery(condition)
 	if err != nil {
 		return nil,err
 	}
 	model := new(RuleModel)
-	err = DB.Where(whereSql,values...).Find(model).Error
+	err = DB.Where(whereSql,values...).First(model).Error
 	if err != nil {
 		return nil,err
 	}
@@ -91,11 +92,46 @@ func DeleteRule(id int)error{
 	return DB.Delete(model).Error
 }
 
-func SelectRulesByCondition(condition map[string]interface{})([]RuleModel,error){
-	var rules []RuleModel
+type RuleQueryParam struct {
+	Page int `form:"page"`
+	Limit int `form:"limit"`
+	Pid int `form:"pid"`
+}
+func GetRuleListAndCount(param *RuleQueryParam)([]RuleModel,int,error){
+	var allRule []RuleModel
+	//设置页码
+	page := 1
+	if param.Page > 0 {
+		page = param.Page
+	}
+	limit := 10
+	if param.Limit > 0 {
+		limit = param.Limit
+	}
+	var count int
+	err := DB.Order("id asc").Offset((page-1)*limit).Limit(limit).Find(&allRule).Count(&count).Error
+	if err == nil {
+		parent := new(RuleModel)
+		for k,v := range allRule {
+			if v.Pid != 0 {
+				_err := DB.Where("id = ?",v.Pid).Select("title").First(parent).Error
+				if _err == nil {
+					allRule[k].Parent = parent.Title
+				}
+			}else{
+				allRule[k].Parent = "顶级节点"
+			}
+		}
+	}
+	return allRule,count,err
+}
+
+//根据roleid获取rule_name集合
+func GetRuleNameByRuleIDS(condition map[string]interface{})([]string,error){
+	var names []string
 	whereSql,values,err := buildQuery(condition)
 	if err != nil {
-		return rules,err
+		return names,err
 	}
-	return rules,DB.Where(whereSql,values...).Find(&rules).Error
+	return names,DB.Model(&RuleModel{}).Where(whereSql,values...).Pluck("rule_name",&names).Error
 }

@@ -81,3 +81,14 @@ func buildQuery(where map[string]interface{})(whereSql string,values []interface
 	}
 	return
 }
+func getTableName(table string)string{
+	return config.MysqlSetting.Prefix + table
+}
+//获取指定表指定字段
+func GetFieldsFromTable(table string,condition map[string]interface{},fields string,result interface{})error{
+	wheresql,values,err := buildQuery(condition)
+	if err != nil {
+		return err
+	}
+	return DB.Table(getTableName(table)).Where(wheresql,values...).Select(fields).Scan(result).Error
+}

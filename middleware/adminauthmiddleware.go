@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"adminframe/utils"
-	"strings"
 	"adminframe/application/model"
+	"adminframe/utils"
+	"github.com/gin-gonic/gin"
 	"strconv"
+	"strings"
 )
 
 //权限验证中间件
@@ -28,13 +28,18 @@ func AdminAuthMiddleware()gin.HandlerFunc{
 		}
 		//需要权限
 		admininfo,_ := model.FindAdminByCondition(map[string]interface{}{"id":adminid})
-		if admininfo == nil || admininfo.RoleID == 0 {
-			object.Response(utils.INVALID_PERMISSION_OPERATE,nil,"")
+		if admininfo == nil {
+			object.Response(utils.INVALID_AUTH_TOKEN,nil,"")
 			c.Abort()
 			return
 		}
 		if admininfo.IsSup == 1 {
 			c.Next()
+			return
+		}
+		if  admininfo.RoleID == 0 {
+			object.Response(utils.INVALID_PERMISSION_OPERATE,nil,"")
+			c.Abort()
 			return
 		}
 		rolemodel,_ := model.FindRoleByCondition(map[string]interface{}{"id":admininfo.RoleID})
